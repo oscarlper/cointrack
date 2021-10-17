@@ -1,0 +1,159 @@
+* {
+  padding: 0;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  border-radius: 10px;
+}
+
+.grid {  
+  display: grid;
+}
+
+.grid div {
+  border: 1px solid orange;
+  padding: 0px;
+}
+
+#grilla {
+  display: grid;
+  grid-template-areas:
+  "header header header"
+  "nav-title treemap-title wallet-title"
+  "nav treemap wallet"
+  "footer footer footer";
+  grid-template-rows: 50px 40px auto 25px;
+  grid-template-columns: 20% auto 20%;
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  height: 100vh;
+  margin: 0;
+}
+
+body {
+  background-color: #000000;
+  color: white;
+}
+
+.border {
+  border: 0px solid white;
+}
+
+header {
+  grid-area: header;
+  padding: 0px;
+  background-color:rgba(70, 70, 70, 0.555);
+}
+
+footer {
+  grid-area: footer;
+  background-color:rgba(70, 70, 70, 0.555);
+}
+
+wallet {
+  grid-area: wallet;
+  background-color:rgba(70, 70, 70, 0.555);
+}
+
+.ordenes {
+  grid-area: ordenes;
+  background-color:rgba(70, 70, 70, 0.555);
+}
+
+nav {
+  grid-area: nav;
+  background-color:rgba(70, 70, 70, 0.555);
+}
+
+nav-title {
+  grid-area: nav-title;
+  background-color:rgba(70, 70, 70, 0.555);
+}
+
+treemap {
+  grid-area: treemap;
+  background-color:rgba(70, 70, 70, 0.555);
+}
+
+treemap-title {
+  grid-area: treemap-title;
+  background-color:rgba(70, 70, 70, 0.555);
+}
+
+@media only screen and (max-width:1024px) {
+  /*body {
+      color :#FFFFFF;
+      background-color: #000000;
+      font-size: 10px;
+  }*/
+
+  #grilla {
+      grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+@media only screen and (max-width:768px) {
+  /*body {
+      color :#FFFFFF;
+      background-color: #000000;
+      font-size: 10px;
+  }*/
+
+
+  /*footer {
+      display:none;
+  }*/
+}
+
+/*
+@media only screen and (min-width:321px) {
+  body {
+      color :#FFFFFF;
+      background-color: #000000;
+      font-size: 12px;
+  }
+}
+
+@media only screen and (max-width:600px) {
+  body {
+      color :#FFFFFF;
+      background-color: #444444;
+      font-size: 14px;
+  }
+}
+
+@media only screen and (max-width:768px) {
+  body {
+      color :#FFFFFF;
+      background-color: #666666;
+      font-size: 16px;
+  }
+}
+
+@media only screen and (max-width:1024px) {
+  body {
+      color :#FFFFFF;
+      background-color: #888888;
+      font-size: 18px;
+  }
+}*/
+
+/* jquery treemap */
+
+#my-treemap {
+float: left;
+width: 100%;
+height: 100%;
+font-family: Arial;
+font-size: 11px;
+}
+
+.minor {
+background-color: red;
+color: white;
+}
+.major {
+background-color: green;
+color: white;
+}
+/* fin jquery treemap */
