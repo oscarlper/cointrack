@@ -1,13 +1,45 @@
+// Get data de Binance Con AJAX Jquery //
+
+var url = "https://www.binance.com";
+
+var query = '/api/v1/ticker/24hr';
+
+//query += '?symbol=BTCUSDT';
+
+var url = url + query;
+
+let parCrypto = [];
+
+function callBinance(mode) {
+
+    let status;
+
+    const apiURLBinance = "https://www.binance.com/api/v1/ticker/24hr";
+    $.ajax({
+        dataType: "json",
+        method: "GET",
+        url: apiURLBinance,
+        success: function(apiDataBinance) {
+            parCrypto = apiDataBinance;
+            populatePairs(parCrypto,mode);
+        }
+    })
+}
+
+callBinance("listAssets");
+
+// Fin Get data de Binance //
+
 // variable de id de Interval al metodo callBinance
 var idInterval;
 var assetToCalc = [];
 
-let orderEvent = document.getElementById("sortedAssets");
-
 var mode = "listAssets";
 
-orderEvent.onclick = () => {populatePairs(parCrypto, mode)};
+$('#assetValues').submit(false);
 
+//jquery event click checkbox orderassets
+$('#sortedAssets').on('click', () => {populatePairs(parCrypto, mode)});
 
 var ctx = document.getElementById("myChart");
 var myChart = new Chart(ctx, {
@@ -17,10 +49,10 @@ var myChart = new Chart(ctx, {
       label: '% Amount USDT',
       data: [0],
       backgroundColor: [
-        'rgba(75, 75, 100, .8)',
-        'rgba(75, 75, 150, .8)',
-        'rgba(75, 75, 200, .8)',
-        'rgba(75, 75, 250, .8)'
+        'rgba(33, 150, 243, 0.7)',
+        'rgba(0, 200, 83, 0.7)',
+        'rgba(255, 235, 59, 0.7)',
+        'rgba(255, 65, 129, 0.7)'
       ],
       borderColor: [
         'rgba(0, 0, 0, 1)',
@@ -41,29 +73,40 @@ var myChart = new Chart(ctx, {
 // metodo para cargar los pares en Assets, opcion de ordenado con llamado a sortAssets
 function populatePairs(parCrypto, mode) {
 
+    let changePercent = 0.0;
+
     if (mode == "listAssets") {
-        document.getElementById('wallet').innerHTML = "<h6>Seleccione los pares en el panel izquierdo y luego presione [INIT]</h6><button class='btn btn-primary' id='initButton' onclick='idInterval=trackInit(true)'>INIT</button>";
-        document.getElementById('initButton').disabled = true;
+        $('#buttons').append("<button id='initButton' type='button' class='btn btn-primary btn-sm'  onclick='idInterval=trackInit(true)'>Start</button>");
+         $('#initButton').prop('disabled', true);
+        $('#messages').html("<p>Seleccione los pares y presione [Start]</p>");
     }
 
-     let htmlPrintPairs = "<form id='formCheckPairs'><table class='table table-dark table-striped text-white'><option>";
+     let htmlPrintPairs = "<form id='formCheckPairs'><table id=listAssets class='table table-sm table-dark table-striped text-white'>";
 
-     if (document.getElementById('sortedAssets').checked) {
+     if ($('#sortedAssets').is(":checked")){
         parCrypto=sortAssets(parCrypto);
     }
 
     for (const assetBinance of parCrypto.filter( assetUSDT => assetUSDT.symbol.substring(assetUSDT.symbol.length - 4) == "USDT")) {
-        //symbolUSDT = assetUSDT.symbol.substring(assetUSDT.symbol.length - 4)
-        //console.log(mode);
         if (mode != "run") {
-            htmlPrintPairs+= "<tr><td><input type='checkbox' id="+assetBinance.symbol+" onclick=verifyInput()>&nbsp&nbsp<label class=fs-7>"+assetBinance.symbol+"</label></td><td id=a_"+ assetBinance.symbol+ "></td></tr>";
+            htmlPrintPairs+= "<tr><td><input type='checkbox' id="+assetBinance.symbol+" onclick=verifyInput()>&nbsp&nbsp<label class=fs-7>"+assetBinance.symbol+"</label></td><td width=10% id=a_"+ assetBinance.symbol+ "></td></tr>";
         } else {
-            htmlPrintPairs+= "<tr><td><p class=fs-7>"+assetBinance.symbol+"<p></td><td class=fs-7 id=a_"+ assetBinance.symbol+ ">"+assetBinance.lastPrice+"</td></tr>";
+            changePercent = parseFloat(assetBinance.priceChangePercent).toFixed(2);
+            if (changePercent >=0) {
+                htmlPrintPairs+= "<tr><td><span class=fs-7>"+assetBinance.symbol+"</span></td><td class=fs-7 width=20%><span id=achg_"+ assetBinance.symbol+" class=ticker-green>"+changePercent+"</span></td><td width=50% class=fs-7 id=a_"+ assetBinance.symbol+ ">"+assetBinance.lastPrice+"</td></tr>";
+            } else {
+                htmlPrintPairs+= "<tr><td><span class=fs-7>"+assetBinance.symbol+"</span></td><td class=fs-7 width=20%><span id=achg_"+ assetBinance.symbol+" class=ticker-red>"+changePercent+"</span></td><td width=50% class=fs-7 id=a_"+ assetBinance.symbol+ ">"+assetBinance.lastPrice+"</td></tr>";
+            }
         }
     }
-    htmlPrintPairs+= "</option></form></table>";
+    htmlPrintPairs+= "</form></table>";
 
     document.getElementById('pairs').innerHTML = htmlPrintPairs;
+
+    if ($('#searchAssetsBox').val() != '') 
+    {
+        searchAssets();
+    }
 
 }
 
@@ -76,36 +119,50 @@ function readSelectedAssets(parCrypto) {
 
     const pairsSelected = [];
 
-    let htmlPrintPairs = "<form class='form-control-sm text-white' id=listPairs><table class='fs-7 text-white'><tr><th>Asset</th><th>Amount</th></tr>";
+    let htmlPrintPairs = "<form class='form-control-sm text-white' id=listPairs><table class='table table-sm table-dark table-striped text-white fs-7'><tr><th>Asset</th><th>Amount</th></tr>";
 
     for (const assetBinance of parCrypto.filter( assetUSDT => assetUSDT.symbol.substring(assetUSDT.symbol.length - 4) == "USDT")) {
-        if (document.getElementById(assetBinance.symbol).checked == true) {
-
-            for (const cryptoWalletItem of cryptoWalletLSession){
-                
-                if (cryptoWalletItem.asset == assetBinance.symbol) {
-                    itemValue = cryptoWalletItem.amount;
-                    break;
-                } else {
-                    itemValue = itemInitValue;
+        if ($('#'+assetBinance.symbol).is(":checked")){
+        
+            if (cryptoWalletLSession) {
+                for (const cryptoWalletItem of cryptoWalletLSession){
+                    
+                    if (cryptoWalletItem.asset == assetBinance.symbol) {
+                        itemValue = cryptoWalletItem.amount;
+                        break;
+                    } else {
+                        itemValue = itemInitValue;
+                    }
                 }
+            } else {
+                itemValue = 0.00000000;
             }
 
-            console.log(itemValue);
-
             htmlPrintPairs+= "<tr><td><label>"+assetBinance.symbol+"&nbsp&nbsp</label></td>";
-            htmlPrintPairs+= "<td><input value="+itemValue+" class='testField form-control' id=w_"+assetBinance.symbol+" type='text' onfocusout=verifyInput(listPairs,'assetValues','trackButton')></td>";
+            htmlPrintPairs+= "<td><input value="+itemValue+" class='testField form-control form-control-sm' id=w_"+assetBinance.symbol+" type='text' onKeyUp=verifyInput(listPairs,'assetValues','trackButton')></td>";
             htmlPrintPairs+= "<td id="+ assetBinance.symbol+ "></td>";
             htmlPrintPairs+= "</tr>";
 
             assetToCalc.push(assetBinance.symbol);
         }
+    
     }
-    htmlPrintPairs+= "</table><br><button id=trackButton class='btn btn-primary mb-5' onclick='trackAsset(mode)'>Track</button></form>";
-    htmlPrintPairs+= "<h6><p id=messageForm class='text-warning'></p><h6>"
-    htmlPrintPairs+= "<h6>Ingrese sus tenencias y presione [TRACK]</h6>";
+    htmlPrintPairs+= "</table></form>";
 
     document.getElementById('wallet').innerHTML = htmlPrintPairs;
+
+    $('#initButton').hide();
+    $('#buttons').append("<button id=trackButton class='btn btn-primary btn-sm' onclick='trackAsset(mode)'>Track</button>");
+
+    $('#trackButton').prop('disabled', true);
+
+    $('#messages').html("<p class='text-primary'>Ingrese sus tenencias y presione [TRACK]</p>");
+    
+    $('#searchAssetsBox').val('');
+    
+    verifyInput(listPairs,'assetValues','trackButton');
+
+
 }
 
 // inicio del intervalo para actualizar los valores del exchange
@@ -126,19 +183,25 @@ function trackInit(state,idInterval){
 // y el valor ingresado de tenencia en la moneda crypto.
 function trackAsset() {
 
-    document.getElementById('graph').innerHTML = null;
+    $('#trackButton').hide();
+    $('#messages').html('<p>Trackeando Assets</p>');
+    
+    $('#buttons').append("<button class='btn btn-danger btn-sm' onclick='location.reload(true)'>Restart</button>");
+    
+    //document.getElementById('graph').innerHTML = null;
 
     var amountAtUSDT;
 
     var totalUSDT;
 
-    let htmlPrintAmount = "<table class='table table-dark table-striped text-white fs-7' ><tr><th>Asset</th><th>%</th><th>USDT</th></tr>";
+    let htmlPrintAmount = "<table class='table table-sm table-dark table-striped text-white' ><tr><th>Asset</th><th>%</th><th>USDT</th><th>Chg.%</th><th>Price</th></tr>";
 
     class cryptoClass {
         constructor(asset,amount) {
             this.asset = asset;
             this.amount = parseFloat(amount);
             this.amountUSDT;
+            this.assetChecked;
         }
         calcAmount(lastPrice) {
             this.amountUSDT = document.getElementById("a_"+this.asset).innerHTML * this.amount;
@@ -154,12 +217,17 @@ function trackAsset() {
     }
 
     for (const pairSelect of cryptoWallet) {
-        htmlPrintAmount+= "<tr><td>"+pairSelect.asset+"</td><td id=u_"+pairSelect.asset+"></td><td id=w_"+pairSelect.asset+">"+pairSelect.calcAmount(document.getElementById('a_'+pairSelect.asset).innerHTML)+"</td></tr>";
+        actualChg = $('#achg_'+pairSelect.asset).html();
+        actualPrice = document.getElementById('a_'+pairSelect.asset).innerHTML;
+        htmlPrintAmount+= "<tr><td>"+pairSelect.asset+"</td><td id=u_"+pairSelect.asset+"></td><td id=w_"+pairSelect.asset+">"+pairSelect.calcAmount(actualPrice)+"</td><td><span class=styleChg id=wchg_"+pairSelect.asset+"></span></td><td id=prc_"+pairSelect.asset+"></td></tr>";
     }
-    document.getElementById('wallet').innerHTML = htmlPrintAmount;
     htmlPrintAmount+= "</table>";
 
+    document.getElementById('wallet').innerHTML = htmlPrintAmount;
+
     localStorage.setItem("coinTrack", JSON.stringify(cryptoWallet));
+
+    console.log(assetToCalc);
 
     setInterval(updateAsset,3000,cryptoWallet);
 }
@@ -168,6 +236,20 @@ function trackAsset() {
 function updateAsset(cryptoWallet) {
 
     for (const pairSelect of cryptoWallet) {
+
+        actualChg = $('#achg_'+pairSelect.asset).html();
+        $('#wchg_'+pairSelect.asset).html(actualChg);
+
+        if (actualChg >=0) {
+            $('#wchg_'+pairSelect.asset).css("color", "white")
+                                       .css("background-color", "green");
+        } else {
+            $('#wchg_'+pairSelect.asset).css("color", "white")
+                                       .css("background-color", "red");
+        }
+
+        actualPrice = $('#a_'+pairSelect.asset).html();
+        $('#prc_'+pairSelect.asset).html(actualPrice); 
         document.getElementById('w_'+pairSelect.asset).innerHTML = pairSelect.calcAmount(document.getElementById('a_'+pairSelect.asset).innerHTML);
     }
     calcPercentage(cryptoWallet);
@@ -180,9 +262,6 @@ function calcPercentage(cryptoWallet) {
     let usdt=0.00;
     let usdtTotal=0.00;
     let index=0;
-    //let indexColor=0;
-
-    //console.log(cryptoWallet);
 
     for (const pairSelectUSDT of cryptoWallet) {
         usdt=parseFloat(pairSelectUSDT.amountUSDT);
@@ -192,22 +271,17 @@ function calcPercentage(cryptoWallet) {
     for (const pairSelectUSDT of cryptoWallet) {
         usdt=parseFloat(pairSelectUSDT.amountUSDT);
         usdtPercent = (usdt * 100 / usdtTotal).toFixed(2);
-        //if (indexColor==4) { indexColor=0; };
-        //colorChart = myChart.data.datasets[0].backgroundColor[indexColor];
-        //console.log("Index: "+indexColor+" Color: "+ colorChart);
-        //document.getElementById('u_'+pairSelectUSDT.asset).innerHTML = "<p style='color:"+colorChart+";'>"+usdtPercent+" %</p>";
+        
         document.getElementById('u_'+pairSelectUSDT.asset).innerHTML = usdtPercent+" %";
-        index++;
-        //indexColor++;
+        
         dataGraph[index] = parseFloat(usdtPercent);
         labelGraph[index] = pairSelectUSDT.asset.substring(3,0);
-        //console.log(usdt);
+        index++;
     }
-
+    usdtTotal=usdtTotal.toFixed(2);
+    $('#usdt').html(usdtTotal+" USDT");
     myChart.data.datasets[0].data = dataGraph;
-//    myChart.data.datasets[0].data = [5,30,40,5,20]
-//    myChart.data.labels = ['AD']
-//    myChart.data.labels = labelGraph;
+    myChart.data.labels = labelGraph;
     myChart.update();
 }
 
@@ -236,16 +310,22 @@ function verifyInput(formTest, typeForm, buttonID) {
 
         const regularExpression = (/^[0-9]{1,}[.]{0,}[0-9]{0,8}$/);
 
-        for (let indexField=0; indexField<formTest.length-1;indexField++) {
+        for (let indexField=0; indexField<listPairs.length;indexField++) {
 
-            if (regularExpression.test(formTest[indexField].value)) {
-                document.getElementById("messageForm").innerHTML = "";
-                document.getElementById(buttonID).disabled = false;
+            if (formTest[indexField].value > 0 ) {
+                if (regularExpression.test(listPairs[indexField].value)) {
+                    document.getElementById("messages").innerHTML = "<p class='text-primary'>Ingrese sus tenencias y presione [TRACK]</p>";
+                    document.getElementById(buttonID).disabled = false;
+                } else {
+                    document.getElementById("messages").innerHTML = "<p>Error en la carga: Valor mayor a 0 ej: 0.00000001<p>";
+                    document.getElementById(buttonID).disabled = true;
+                    return false;
+                } 
             } else {
-                document.getElementById("messageForm").innerHTML = "Error en la carga";
+                document.getElementById("messages").innerHTML = "<p>Error en la carga: Valor mayor a 0 ej: 0.00000001</p>";
                 document.getElementById(buttonID).disabled = true;
                 return false;
-            }
+            } 
         }
     } else  {
         for (let indexField=0; indexField<formCheckPairs.length;indexField++) {
@@ -269,6 +349,57 @@ function addData(chart, label, data) {
 
 function restoreSession() {
     const cryptoWalletLSession = JSON.parse(localStorage.getItem("coinTrack"));
-    console.log(cryptoWalletLSession);
     return(cryptoWalletLSession);
 }
+
+function toggleDivs(divToHide) {
+
+    if (divToHide=="pairs") {
+        if ($('#pairs').is(":visible")) {
+            $('#nav-title').hide("slow")
+            $('#pairs').delay(500)
+                       .slideUp("slow")
+                       .hide("slow");
+            $('#buttonPairs').html("Show Cryptos");
+        } else {
+            $('#nav-title').show("slow");
+                           
+            $('#pairs').delay(500)
+                       .slideDown("slow");
+
+            $('#buttonPairs').html("Hide Cryptos");
+        }
+    } 
+    else if (divToHide=="graph") {
+        if ($('#treemap').is(":visible")) {
+            $('#treemap').hide("slow");
+            $('#buttonGraph').html("Show Graph");
+        } else {
+            $('#treemap').show("slow");
+            $('#buttonGraph').html("Hide Graph");
+        }
+    }
+}
+
+function searchAssets(reset) {
+    if (reset == "reset") {
+        $('#searchAssetsBox').val("");
+    }
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("searchAssetsBox");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("listAssets");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }       
+    }
+}
+

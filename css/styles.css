@@ -3,10 +3,45 @@
   margin: 0px;
 }
 
-
 body {
   background-color: #000000;
   color: white;
+}
+
+.ticker-red {
+  color: white;
+  background-color: red;
+  border-radius: 3px;
+  min-width: 60px;
+  max-width: 60px;
+  width: 60px;
+  display: inline-block;
+  text-align: center;
+  margin-right:20px;
+}
+
+.ticker-green {
+  color: white;
+  background-color: green;
+  border-radius: 3px;
+  min-width: 60px;
+  max-width: 60px;
+  width: 60px;
+  display: inline-block;
+  text-align: center;
+  margin-right:20px;
+}
+
+.styleChg {
+  border-radius: 3px;
+  min-width: 60px;
+  max-width: 60px;
+  width: 60px;
+  /*display: inline-block; */
+  text-align: center;
+  display: inline-block;
+  text-align: center;
+  margin-right:20px;
 }
 
 .fs-7 {
@@ -27,6 +62,7 @@ header {
 
 footer {
   background-color:rgba(70, 70, 70);
+  min-height: 3vh;
 }
 
 .wallet {
@@ -46,11 +82,6 @@ nav {
   overflow-y: scroll;
 }
 
-nav-title {
-  grid-area: nav-title;
-  background-color:rgba(70, 70, 70);
-}
-
 .treemap {
   grid-area: treemap;
   background-color:rgba(70, 70, 70);
@@ -61,62 +92,6 @@ nav-title {
   background-color:rgba(70, 70, 70);
 }
 
-@media only screen and (max-width:1024px) {
-  /*body {
-      color :#FFFFFF;
-      background-color: #000000;
-      font-size: 10px;
-  }*/
-
-  #grilla {
-      grid-template-columns: repeat(2, 1fr);
-  }
-
+.messages {
+  max-height: 5vh;
 }
-
-@media only screen and (max-width:768px) {
-  /*body {
-      color :#FFFFFF;
-      background-color: #000000;
-      font-size: 10px;
-  }*/
-
-
-  /*footer {
-      display:none;
-  }*/
-}
-
-/*
-@media only screen and (min-width:321px) {
-  body {
-      color :#FFFFFF;
-      background-color: #000000;
-      font-size: 12px;
-  }
-}
-
-@media only screen and (max-width:600px) {
-  body {
-      color :#FFFFFF;
-      background-color: #444444;
-      font-size: 14px;
-  }
-}
-
-@media only screen and (max-width:768px) {
-  body {
-      color :#FFFFFF;
-      background-color: #666666;
-      font-size: 16px;
-  }
-}
-
-@media only screen and (max-width:1024px) {
-  body {
-      color :#FFFFFF;
-      background-color: #888888;
-      font-size: 18px;
-  }
-}*/
-
