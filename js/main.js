@@ -1,14 +1,10 @@
 // Get data de Binance Con AJAX Jquery //
 
-var url = "https://www.binance.com";
-
-var query = '/api/v1/ticker/24hr';
-
-//query += '?symbol=BTCUSDT';
-
-var url = url + query;
-
 let parCrypto = [];
+
+//let trendDataArray = [];
+
+//let trendDataFlag = true;
 
 function callBinance(mode) {
 
@@ -69,6 +65,36 @@ var myChart = new Chart(ctx, {
   }
 });
 
+/* Grafica estadistica proxima version
+var ctx2 = document.getElementById("myTrendChart");
+var myChart = new Chart(ctx2, {
+  type: 'line',
+  data: {
+      datasets: [{
+      label: 'Historical Trend Chart',
+      data: [0],
+      backgroundColor: [
+        'rgba(33, 150, 243, 0.7)',
+        'rgba(0, 200, 83, 0.7)',
+        'rgba(255, 235, 59, 0.7)',
+        'rgba(255, 65, 129, 0.7)'
+      ],
+      borderColor: [
+        'rgba(0, 0, 0, 1)',
+        'rgba(0, 0, 0, 1)',
+        'rgba(0, 0, 0, 1)',
+        'rgba(0, 0, 0, 1)'
+      ],
+      borderWidth: 1
+    }]
+  },
+  options: {
+   	//cutoutPercentage: 40,
+    responsive: true,
+  }
+});
+
+*/
 
 // metodo para cargar los pares en Assets, opcion de ordenado con llamado a sortAssets
 function populatePairs(parCrypto, mode) {
@@ -117,8 +143,6 @@ function readSelectedAssets(parCrypto) {
 
     let cryptoWalletLSession = restoreSession();
 
-    const pairsSelected = [];
-
     let htmlPrintPairs = "<form class='form-control-sm text-white' id=listPairs><table class='table table-sm table-dark table-striped text-white fs-7'><tr><th>Asset</th><th>Amount</th></tr>";
 
     for (const assetBinance of parCrypto.filter( assetUSDT => assetUSDT.symbol.substring(assetUSDT.symbol.length - 4) == "USDT")) {
@@ -147,6 +171,7 @@ function readSelectedAssets(parCrypto) {
         }
     
     }
+
     htmlPrintPairs+= "</table></form>";
 
     document.getElementById('wallet').innerHTML = htmlPrintPairs;
@@ -161,7 +186,6 @@ function readSelectedAssets(parCrypto) {
     $('#searchAssetsBox').val('');
     
     verifyInput(listPairs,'assetValues','trackButton');
-
 
 }
 
@@ -188,8 +212,6 @@ function trackAsset() {
     
     $('#buttons').append("<button class='btn btn-danger btn-sm' onclick='location.reload(true)'>Restart</button>");
     
-    //document.getElementById('graph').innerHTML = null;
-
     var amountAtUSDT;
 
     var totalUSDT;
@@ -227,8 +249,6 @@ function trackAsset() {
 
     localStorage.setItem("coinTrack", JSON.stringify(cryptoWallet));
 
-    console.log(assetToCalc);
-
     setInterval(updateAsset,3000,cryptoWallet);
 }
 
@@ -253,6 +273,20 @@ function updateAsset(cryptoWallet) {
         document.getElementById('w_'+pairSelect.asset).innerHTML = pairSelect.calcAmount(document.getElementById('a_'+pairSelect.asset).innerHTML);
     }
     calcPercentage(cryptoWallet);
+
+/* funcion grafica estadistica proxima version
+
+    if (trendDataFlag) {
+        for (const cryptoWalletItem of cryptoWallet) {
+            getTrendData(cryptoWalletItem.asset,30)
+            
+        }
+        trendDataFlag = false
+        plotTrendData(trendDataArray);
+    }
+
+*/
+
 }
 
 function calcPercentage(cryptoWallet) {
@@ -272,17 +306,19 @@ function calcPercentage(cryptoWallet) {
         usdt=parseFloat(pairSelectUSDT.amountUSDT);
         usdtPercent = (usdt * 100 / usdtTotal).toFixed(2);
         
-        document.getElementById('u_'+pairSelectUSDT.asset).innerHTML = usdtPercent+" %";
+        document.getElementById('u_'+pairSelectUSDT.asset).innerHTML = usdtPercent+"%";
         
         dataGraph[index] = parseFloat(usdtPercent);
         labelGraph[index] = pairSelectUSDT.asset.substring(3,0);
         index++;
+
     }
     usdtTotal=usdtTotal.toFixed(2);
     $('#usdt').html(usdtTotal+" USDT");
     myChart.data.datasets[0].data = dataGraph;
     myChart.data.labels = labelGraph;
     myChart.update();
+
 }
 
 // funcion que ordena por nombre de par en el array de objetos que se obtine del exchange y retorna el array ordenado.
@@ -371,11 +407,11 @@ function toggleDivs(divToHide) {
         }
     } 
     else if (divToHide=="graph") {
-        if ($('#treemap').is(":visible")) {
-            $('#treemap').hide("slow");
+        if ($('#graphDiv').is(":visible")) {
+            $('#graphDiv').hide("slow");
             $('#buttonGraph').html("Show Graph");
         } else {
-            $('#treemap').show("slow");
+            $('#graphDiv').show("slow");
             $('#buttonGraph').html("Hide Graph");
         }
     }
@@ -403,3 +439,33 @@ function searchAssets(reset) {
     }
 }
 
+/* funcion grafica estadistiva proxima version 
+
+function getTrendData(crypto,limit) {
+
+    let trendData;
+
+    const apiURLBinance = "https://api.binance.com/api/v1/klines?symbol="+crypto+"&interval=1d&limit="+limit;
+    console.log(apiURLBinance);
+    $.ajax({
+        dataType: "json",
+        method: "GET",
+        url: apiURLBinance,
+        success: function(apiTrendData) {
+            trendData = apiTrendData;
+            trendDataArray.push(trendData);
+            console.log(trendDataArray);
+        }
+    })
+
+}
+
+function plotTrendData(dataGraph) {
+
+    myTrendChart.data.data = dataGraph;
+    //myTrendChart.data.labels = labelGraph;
+    myTrendChart.update();
+
+}
+
+*/

@@ -8,6 +8,7 @@ body {
   color: white;
 }
 
+
 .ticker-red {
   color: white;
   background-color: red;
@@ -52,28 +53,18 @@ body {
   border: 1px solid rgb(10, 10, 10);
   border-radius: 5px;
   background-color:rgb(30, 30,30);
-  }
-
-header {
-  grid-area: header;
-  padding: 0px;
-  background-color:rgba(70, 70, 70);
 }
+
 
 footer {
-  background-color:rgba(70, 70, 70);
-  min-height: 3vh;
+  background-color: rgba(70, 70, 70);
+  min-height: 7vh;
 }
 
-.wallet {
-  grid-area: wallet;
-  background-color:rgba(70, 70, 70);
+#wallet {
+  max-height: 40vh;
+  min-height: 40vh;
   overflow-y: scroll;
-}
-
-.ordenes {
-  grid-area: ordenes;
-  background-color:rgba(70, 70, 70);
 }
 
 nav {
@@ -82,16 +73,41 @@ nav {
   overflow-y: scroll;
 }
 
-.treemap {
-  grid-area: treemap;
-  background-color:rgba(70, 70, 70);
-}
-
-.treemap-title {
-  grid-area: treemap-title;
-  background-color:rgba(70, 70, 70);
-}
-
-.messages {
+#messages {
   max-height: 5vh;
+}
+
+#minbar {
+  min-height: 5vh;
+}
+
+#menuBar {
+  min-height: 3vh;
+}
+
+
+#tradingViewSection {
+  padding: 0px; 
+  min-height: 85vh; 
+  max-height: 85vh;
+}
+
+#graphDiv {
+  max-height: 85vh; 
+  padding:0px;
+}
+
+#pairs {
+  max-height: 85vh; 
+  overflow-y: scroll;
+}
+
+#doughnut {
+  min-height: 37vh;
+  max-height: 37vh;
+}
+
+#myChart {
+  min-height: 37vh;
+  max-height: 37vh;
 }
