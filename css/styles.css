@@ -88,12 +88,12 @@ nav {
 
 #tradingViewSection {
   padding: 0px; 
-  min-height: 85vh; 
-  max-height: 85vh;
+  min-height: 65vh; 
+  max-height: 65vh;
 }
 
 #graphDiv {
-  max-height: 85vh; 
+  max-height: 65vh; 
   padding:0px;
 }
 
@@ -110,4 +110,9 @@ nav {
 #myChart {
   min-height: 37vh;
   max-height: 37vh;
+}
+
+#myTrendChart {
+  min-height: 20vh;
+  max-height: 20vh;
 }
