@@ -5,7 +5,11 @@ let parCrypto = [];
 // definir una clase u objeto ?
 var trendDataArray = [];
 
-let trendDataFlag = true;
+const toGraphArray = [];
+
+var trendDataFlag = true;
+
+var pushArray=0;
 
 function callBinance(mode) {
 
@@ -66,37 +70,6 @@ var myChart = new Chart(ctx, {
   }
 });
 
-/* Grafica estadistica proxima version
-var ctx2 = document.getElementById("myTrendChart");
-var myChart = new Chart(ctx2, {
-  type: 'line',
-  data: {
-      datasets: [{
-      label: 'Historical Trend Chart',
-      data: [0],
-      backgroundColor: [
-        'rgba(33, 150, 243, 0.7)',
-        'rgba(0, 200, 83, 0.7)',
-        'rgba(255, 235, 59, 0.7)',
-        'rgba(255, 65, 129, 0.7)'
-      ],
-      borderColor: [
-        'rgba(0, 0, 0, 1)',
-        'rgba(0, 0, 0, 1)',
-        'rgba(0, 0, 0, 1)',
-        'rgba(0, 0, 0, 1)'
-      ],
-      borderWidth: 1
-    }]
-  },
-  options: {
-   	//cutoutPercentage: 40,
-    responsive: true,
-  }
-});
-
-*/
-
 // metodo para cargar los pares en Assets, opcion de ordenado con llamado a sortAssets
 function populatePairs(parCrypto, mode) {
 
@@ -130,7 +103,7 @@ function populatePairs(parCrypto, mode) {
 
     document.getElementById('pairs').innerHTML = htmlPrintPairs;
 
-    if ($('#searchAssetsBox').val() != '') 
+    if ($('#searchAssetsBox').val() != '')
     {
         searchAssets();
     }
@@ -148,10 +121,10 @@ function readSelectedAssets(parCrypto) {
 
     for (const assetBinance of parCrypto.filter( assetUSDT => assetUSDT.symbol.substring(assetUSDT.symbol.length - 4) == "USDT")) {
         if ($('#'+assetBinance.symbol).is(":checked")){
-        
+
             if (cryptoWalletLSession) {
                 for (const cryptoWalletItem of cryptoWalletLSession){
-                    
+
                     if (cryptoWalletItem.asset == assetBinance.symbol) {
                         itemValue = cryptoWalletItem.amount;
                         break;
@@ -170,7 +143,7 @@ function readSelectedAssets(parCrypto) {
 
             assetToCalc.push(assetBinance.symbol);
         }
-    
+
     }
 
     htmlPrintPairs+= "</table></form>";
@@ -183,9 +156,9 @@ function readSelectedAssets(parCrypto) {
     $('#trackButton').prop('disabled', true);
 
     $('#messages').html("<p class='text-primary'>Ingrese sus tenencias y presione [TRACK]</p>");
-    
+
     $('#searchAssetsBox').val('');
-    
+
     verifyInput(listPairs,'assetValues','trackButton');
 
 }
@@ -210,9 +183,9 @@ function trackAsset() {
 
     $('#trackButton').hide();
     $('#messages').html('<p>Trackeando Assets</p>');
-    
+
     $('#buttons').append("<button class='btn btn-danger btn-sm' onclick='location.reload(true)'>Restart</button>");
-    
+
     var amountAtUSDT;
 
     var totalUSDT;
@@ -272,7 +245,7 @@ function updateAsset(cryptoWallet) {
         }
 
         actualPrice = $('#a_'+pairSelect.asset).html();
-        $('#prc_'+pairSelect.asset).html(actualPrice); 
+        $('#prc_'+pairSelect.asset).html(actualPrice);
         document.getElementById('w_'+pairSelect.asset).innerHTML = pairSelect.calcAmount(document.getElementById('a_'+pairSelect.asset).innerHTML);
     }
     calcPercentage(cryptoWallet);
@@ -281,11 +254,11 @@ function updateAsset(cryptoWallet) {
 
     if (trendDataFlag) {
         for (const cryptoWalletItem of cryptoWallet) {
-            arrayTemp = getTrendData(cryptoWalletItem.asset,30,3);
+
+            arrayTemp = getTrendData(cryptoWalletItem.asset,30);
         }
         trendDataFlag = false
-        //console.log(arrayTemp);
-        //calcDataTrend(trendDataArray);
+
     }
 
 }
@@ -306,9 +279,9 @@ function calcPercentage(cryptoWallet) {
     for (const pairSelectUSDT of cryptoWallet) {
         usdt=parseFloat(pairSelectUSDT.amountUSDT);
         usdtPercent = (usdt * 100 / usdtTotal).toFixed(2);
-        
+
         document.getElementById('u_'+pairSelectUSDT.asset).innerHTML = usdtPercent+"%";
-        
+
         dataGraph[index] = parseFloat(usdtPercent);
         labelGraph[index] = pairSelectUSDT.asset.substring(3,0);
         index++;
@@ -357,12 +330,12 @@ function verifyInput(formTest, typeForm, buttonID) {
                     document.getElementById("messages").innerHTML = "<p>Error en la carga: Valor mayor a 0 ej: 0.00000001<p>";
                     document.getElementById(buttonID).disabled = true;
                     return false;
-                } 
+                }
             } else {
                 document.getElementById("messages").innerHTML = "<p>Error en la carga: Valor mayor a 0 ej: 0.00000001</p>";
                 document.getElementById(buttonID).disabled = true;
                 return false;
-            } 
+            }
         }
     } else  {
         for (let indexField=0; indexField<formCheckPairs.length;indexField++) {
@@ -376,6 +349,7 @@ function verifyInput(formTest, typeForm, buttonID) {
     }
 }
 
+// metodo para agregar informacion al doughnut chart
 function addData(chart, label, data) {
     chart.data.labels.push(label);
     chart.data.datasets.forEach((dataset) => {
@@ -384,11 +358,13 @@ function addData(chart, label, data) {
     chart.update();
 }
 
+// recupero los datos de la local storage
 function restoreSession() {
     const cryptoWalletLSession = JSON.parse(localStorage.getItem("coinTrack"));
     return(cryptoWalletLSession);
 }
 
+// tooggle divs de monedas y graficas
 function toggleDivs(divToHide) {
 
     if (divToHide=="pairs") {
@@ -400,13 +376,13 @@ function toggleDivs(divToHide) {
             $('#buttonPairs').html("Show Cryptos");
         } else {
             $('#nav-title').show("slow");
-                           
+
             $('#pairs').delay(500)
                        .slideDown("slow");
 
             $('#buttonPairs').html("Hide Cryptos");
         }
-    } 
+    }
     else if (divToHide=="graph") {
         if ($('#graphDiv').is(":visible")) {
             $('#graphDiv').hide("slow");
@@ -418,6 +394,7 @@ function toggleDivs(divToHide) {
     }
 }
 
+// busca monedas con el campo search
 function searchAssets(reset) {
     if (reset == "reset") {
         $('#searchAssetsBox').val("");
@@ -436,13 +413,12 @@ function searchAssets(reset) {
             } else {
                 tr[i].style.display = "none";
             }
-        }       
+        }
     }
 }
 
-/* funcion grafica estadistica proxima version */
-
-function getTrendData(crypto,limit,assetVal) {
+/* recupero datos con la api de una moneda especifica y cantidad de dias */
+function getTrendData(crypto,limit) {
 
     var trendData;
     var arrayTemp = [];
@@ -460,24 +436,69 @@ function getTrendData(crypto,limit,assetVal) {
                 valueTemp = parseFloat(forArray[4]);
                 arrayTemp.push(valueTemp);
             }
-            trendDataArray.push(arrayTemp);
-            if (assetVal == trendDataArray.length) {
-//                console.log(trendDataArray);
-                calcDataTrend(trendDataArray);
-                graficaTendencia(trendDataArray);
-            }
+        
+            calcDataTrend(arrayTemp,crypto);
         }
     })
 
 }
 
+// calculo en base a los dato de la api el monto por dia de la moneda y lo acumulo en un array.
+function calcDataTrend(arrayTemp,crypto){
+
+    // arraytemp en valor del a crypto a 30 dias de historico. se almacena en arraytemp
+
+    pushArray++;
+
+    let itemValueGraph = 0;
+    let tempGraphArray = [];
+    
+    const assetsToGraph = JSON.parse(localStorage.getItem("coinTrack"));
+    let feedArrayFlag = assetsToGraph.length - 1;
+
+    assets = assetsToGraph.length;
+    
+    // obengo el valor invertido en crypto se almacena en valueAsset
+    for (const assetCalc of assetsToGraph) {
+        if (assetCalc.asset == crypto) {
+            valueAsset = assetCalc.amount;
+        }
+    }
+    
+    // multiplico el valor de arraytemp por el valor invertido, lo almaceno en un nuevo array tempGraphArray.    
+    tempGraphArray.push(arrayTemp.map(function(xtemp) { return parseFloat(xtemp * valueAsset);}));
+
+    toGraphArray.push(tempGraphArray);
+
+    for (let i=0;i< toGraphArray[0][0].length; i++) {
+        for (let j=0;j<toGraphArray.length;j++) {
+            itemValueGraph = parseFloat(itemValueGraph) + parseFloat(toGraphArray[j][0][i]);  
+            
+            if (j==(feedArrayFlag)) {
+                console.log(toGraphArray.length-1);
+                trendDataArray.push(parseFloat(itemValueGraph));
+            }
+        }
+        itemValueGraph = 0;
+        
+    }
+
+    // si ya se obtuvieron todas las monedas y fueron calculadas grafico la tendencia diaria
+    if (pushArray == assets) {
+        console.log(trendDataArray);
+        graficaTendencia(trendDataArray);
+    }
+}
+
+// llamo a la libreria chart.js para graficar la tendencia diaria.
 function graficaTendencia(dataToGraph) {
 console.log("A GRAFICAR");
+console.log(dataToGraph);
 new Chart(document.getElementById("myTrendChart"), {
     type: 'line',
     data: {
       labels: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30],
-      datasets: [{ 
+      datasets: [{
           data: dataToGraph,
           label: "Trending Chart Last 30 days",
           borderColor: "#3e95cd",
@@ -488,49 +509,8 @@ new Chart(document.getElementById("myTrendChart"), {
     options: {
       title: {
         display: true,
-        text: 'World population per region (in millions)'
+        text: ''
       }
     }
   });
-}  
-
-
-function calcDataTrend(){
-
-    let tempGraphArray = [];
-    let graphArray = [];
-    const assetsToGraph = JSON.parse(localStorage.getItem("coinTrack"));
-    let k;
-
-    console.log(trendDataArray);
-
-    for ( let i=0; i < trendDataArray.length; i++ ) {
-        for (let j=0; j < trendDataArray[i].length; j++) {
-            k++;
-            if ( k<30 ) {
-                tempGraphArray.push(assetsToGraph[i].amount*trendDataArray[i][j]);
-            } else {
-                k=0;
-                graphArray.push(tempGraphArray);
-            }
-        }
-    }
-
-    console.log(graphArray);
-/*
-    let dateValues = tempGraphArray.length/assetsToGraph.length;
-
-    for ( let k=0; k < dateValues; k++ ) {
-        graphArray[k]=tempGraphArray[k]+tempGraphArray[k+dateValues]+tempGraphArray[k+dateValues+dateValues];
-        /*for ( let l=0; l < tempGraphArray.length; l++) {
-            console.log(k);
-            console.log(l);
-            graphArray[k]=tempGraphArray[k+l];
-        }
-    }
-    
-    */
-    
-    graficaTendencia(graphArray[0]);
 }
-
