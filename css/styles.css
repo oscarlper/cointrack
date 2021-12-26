@@ -57,8 +57,10 @@ body {
 
 
 footer {
+  position: relative;
+  vertical-align: bottom;
   background-color: rgba(70, 70, 70);
-  min-height: 7vh;
+  min-height: 3vh;
 }
 
 #wallet {
@@ -98,7 +100,8 @@ nav {
 }
 
 #pairs {
-  max-height: 85vh; 
+  min-height: 89vh;
+  max-height: 89vh; 
   overflow-y: scroll;
 }
 
@@ -115,4 +118,12 @@ nav {
 #myTrendChart {
   min-height: 20vh;
   max-height: 20vh;
+}
+
+.buttonSize {
+  height: 20px;
+}
+
+#searchAssetsBox {
+  vertical-align: middle;
 }

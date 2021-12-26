@@ -15,7 +15,7 @@
     <div class="container-fluid bg-dark text-white">
         <div class="row" id=minbar>
             <div class="col-md-3">
-                <H2 class="primary text-white">Cointrack</H2>
+                <H1 class="primary text-white" style="display:none;"></H1><img src=img/cointrack_logo.png height="40px">
             </div>
             <!-- Menu para SPA 
             <div class="col-md-6" class="border" id="navmenu">
@@ -38,7 +38,7 @@
             -->
         </div>
         <div class="row" id=menuBar>
-            <div id="nav-title" class="col-md-3 border fs-7">Search:&nbsp<!--input type="checkbox" id=sortedAssets--><input type="text" id=searchAssetsBox onkeyup="searchAssets()">&nbsp<button class="btn btn-secondary btn-sm" type=button id=searchAssetsReset onclick="searchAssets('reset')">RESET</button>
+            <div id="nav-title" class="col-md-3 border fs-7">Search:&nbsp<!--input type="checkbox" id=sortedAssets--><input type="text" id=searchAssetsBox onkeyup="searchAssets()">&nbsp<button class="btn btn-secondary btn-sm" label="RESET" type=button id=searchAssetsReset onclick="searchAssets('reset')">RESET</button>
             </div>
             <div class="col-md-3" class="border" id="buttons">
                 <button id="buttonPairs" type="button" class="btn btn-secondary btn-sm" onclick="toggleDivs('pairs');">Hide Cryptos</button>
@@ -47,11 +47,11 @@
             <div class="col-md-3" class="border" id="messages">
             </div>
         </div>
-        <div class="row" >
+        <div class="row" style="min-height: 89vh;">
             <div class="col-md-3" id="pairs">
             </div>
             <div  class="col-md-6" id=graphDiv >
-                <div class=container-fluid>
+                <div class=container-fluid ">
                     <div class=row>
                         <div class=col-md-12 id="tradingViewSection">
                         <!-- TradingView Widget BEGIN -->
